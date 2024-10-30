@@ -15,7 +15,7 @@ load('./mats/Cols.mat')
 % load distribution parameters
 para = load('./mats/Parameters.mat');
 
-stratnames = {'Running Hot (RH)','Misguided Suppression (MS)'};
+stratnames = {'Running Hot (RH)','Mistimed Suppression (MS)'};
 
 % parameters
 R0 = 2;            % R_0
