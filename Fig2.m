@@ -28,7 +28,7 @@ para.eta = new_background/para.Ibar;
 % 2: Fig S7b  (alpha_0 = 0.5)
 % 3: Fig S10a (alpha_1 = 5 alpha_0)
 % 4: Fig S10b (alpha_1 = 2 alpha_0)
-sensitivity_analysis = 4;
+sensitivity_analysis = 0;
 
 % TO PRODUCE FS3 DISTRIBUTIONS ON BEDS AVAILABLE, SET THE BELOW VARIABLE
 % TO 1
@@ -164,7 +164,6 @@ plot(outES.t,outES.in_ICU,'Color',myorange)
 yline(para.Ibar,'k--','Total beds ICU$_c$','Interpreter','latex','LineWidth',2,'FontSize',16,'LabelVerticalAlignment','top','LabelHorizontalAlignment','right','Layer','bottom')
 xlabel('Time $t$ (days)')
 ylabel('In ICU');
-% title(['Available bed change: $',num2str(100*(bedincrease-1)),'\%$']);
 axis([0 min([350 maxtime]) 0 max([1.3*para.Ibar outLS.in_ICU outES.in_ICU])])
 grid on
 
@@ -181,7 +180,6 @@ yline(LS_cost_of_inf_hard,'Color',mypurple,'LineStyle','-.','LineWidth',3,'Layer
 yline(ES_cost_of_inf_hard,'Color',myorange,'LineStyle','--','LineWidth',3,'Layer','bottom')
 xticks(0:50:200)
 axis([0 max(vs) 0.95*min(LS_cost_of_inf_hard, ES_cost_of_inf_hard) 1.05*max([LS_cost_of_inf_soft; ES_cost_of_inf_soft])])
-% axis([0 max(vs) 2750 7750])
 ax = gca;
 ax.YAxis.Exponent = 0;
 % xticks([vs(1:round(nv/5):end)])
@@ -204,11 +202,6 @@ else
     % save incidence and prevalence for uncertain Hc script
     save('./mats/lockdowndilemma.mat',"outLS","outES","dv","dk","vs","ks","nv","nk","RIT","duration","inc_or_prev","stratnames","apply_discounting",'-mat')
 end
-
-
-% saveas(f,['./testing_images/F2_bedchange_',num2str(round(100*(bedincrease-1))),'.png'])
-% saveas(f4,['./images/F2BC_bedchange_',num2str(round(100*(bedincrease-1))),'.png'])
-% saveas(f5,['./images/F2BC_nok_bedchange_',num2str(round(100*(bedincrease-1))),'.png'])
 
 %% Produce Fig 4D: Uncertainty in available beds
 
@@ -316,9 +309,7 @@ f4.Position = [300 300 600 300];
 set(gca,'InnerPosition',[0.16 0.21 0.8 0.75])
 hold all
 
-mysigmacols = [252,146,114; 251,106,74; 239,59,44; 203,24,29; 153,0,13]./255;
 mysigmacols = [107,174,214; 66,146,198; 33,113,181; 8,81,156; 8,48,107]./255;
-% mysigmacols = [27,158,119; 217,95,2; 102,166,30; 166,118,29; 102,102,102]./255;
 
 
 for s = 1:ndists
@@ -334,22 +325,14 @@ for s = 1:ndists
     yline(whatweplotting_hard,'Color',mysigmacols(length(mysigmacols)-ndists+s,:),'LineStyle',':','LineWidth',2,'Layer','bottom')
 end
 yline(0,'Color','k','LineStyle','-','LineWidth',2,'Layer','bottom')
-% patch([0 0 max(vs) max(vs)], [0 1e4 1e4 0],myorange,'EdgeColor','none','FaceAlpha',0.1)
-% patch([0 0 max(vs) max(vs)], [0 -1e4 -1e4 0],mypurple,'EdgeColor','none','FaceAlpha',0.1)
 legend(h,'Location','northeast','AutoUpdate','off','FontSize',14.5,'NumColumns',3)
 xticks(0:50:200)
-% text(50,600,sprintf("\\alpha \\in %c", 120124),'Interpreter','tex')
 axis([0 max(vs) myaxmin 1.5*max(whatweplotting_soft,[],"all")])
-% axis([0 max(vs) -500 1000])
 ax = gca;
 ax.YAxis.Exponent = 0;
 xlabel('Soft constraint scaling $v$')
 ylab = ylabel('Expected cost difference');
-% ylab = ylabel('\\tex[B][B]\{$E[C_{LS}(v)] - E[C_{ES}(v)]$\}','Interpreter','none');
-% ylab = ylabel('\tex[B][B]{$E[C_{LS}(v)]$}','FontSize',15);
-% ylab = ylabel('p2','FontSize',15,'Interpreter','none');
 ylab.Position(2) = ylab.Position(2) - 100;
-% title('$E[C_{LS}(v)] - E[C_{ES}(v)]$')
 grid on
 
 
@@ -362,11 +345,7 @@ hold all
 [cont1,cont2] = contourf(Costdiff,-1500:500:1500,'-','LineWidth',1,'LabelColor','k','LabelSpacing',300);
 clabel(cont1,cont2,'FontSize',0.9*16,'Interpreter','latex')
 set(gca,'YDir','Normal')
-% clim([0 100])
 clim([-1500 1500])
-% xline(Ibars(find(LS_overwhelm>0,1,'last')), 'Color',mypurple, 'LineStyle','--', 'LineWidth',4)
-% xline(Ibars(find(ES_overwhelm>0,1,'last')), 'Color',myorange, 'LineStyle','--', 'LineWidth',4)
-% for ticks, ticklabels, grid
 vspec = (1:round(nv/20):nv); 
 Hspec = (1:round(length(Ibars)/12):length(Ibars)); 
 yticks(vspec(1:2:end))
@@ -374,7 +353,6 @@ xticks(Hspec(1:2:end))
 yticklabels(vs(vspec(1:2:end)))
 xticklabels(Ibars(Hspec(1:2:end)))
 xtickangle(0)
-% axis([Ibars(1) Ibars(end) vs(1) vs(end)])
 ylim([1 501])
 xlabel('Available ICU beds')
 ylabel('Soft constraint scaling $v$')
@@ -397,7 +375,6 @@ if plot_distributions
     ylabel('PMF')
     ax = gca;
     ax.YAxis.Exponent = 0;
-    % title(['$\sigma_c = ',num2str(sigs(s)),'$']);
     grid on
 
     saveas(f7,'./images/supplement/FS3_ICUbeddists.png')

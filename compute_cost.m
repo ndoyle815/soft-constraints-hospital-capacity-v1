@@ -3,12 +3,11 @@ function C = compute_cost(sim,para,whichconstr,v,inc_or_prev,apply_discounting)
 % function to compute the cost of a model simulation using either constraint 
 % INPUTS:
 % sim:         results from model simulation
-% alpha:       upper and lower bounds for cost per ICU induvidual
 % para:        model distribution, capacity and cost parameters
 % whichconstr: 'hard' or 'soft' to compute either constraint
 % v:           scaling of logistic constraint
 % inc_or_prev: flag to use different methods for calculation
-% indirect:    whether to apply indirect costs
+% apply_discounting: whether to apply discounting of costs
 
 % simulation length
 T = length(sim.new_ICU);
@@ -53,11 +52,6 @@ if isequal(whichconstr,'hard')
     
     end
 
-    % % append indirect costs
-    % if indirect
-    %     Cindirect = max(0, min( sim.in_ICU+background-capacity, background ) );
-    %     C = C + Cindirect;
-    % end
 
 elseif isequal(whichconstr,'soft')
 
@@ -115,14 +109,6 @@ elseif isequal(whichconstr,'soft')
         C = alpha_t.*DistMat';
 
     end
-
-    % % append indirect costs
-    % if indirect
-    %     logfunc = 1./(1 + exp(-v.*((sim.in_ICU+background)./capacity - 1)));
-    %     %Cindirect = max( 0, min( (sim.in_ICU+background-capacity).*logfunc, background ) );
-    %     Cindirect = max( 0, min( (sim.in_ICU+background-capacity), background ) );
-    %     C = C + Cindirect;
-    % end
 
 else
 

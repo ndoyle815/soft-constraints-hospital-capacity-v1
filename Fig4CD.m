@@ -1,5 +1,4 @@
-% script to test whether the two constraints lead to a different decision
-% on the "Lockdown" vs "No Lockdown" question
+% script to to simulate and produce Figure 4C,D in manuscript
 clear; close all
 
 % Plotting preferences
@@ -120,7 +119,6 @@ colormap(BGEcolormap(5:end,:))
 
 [M1,RH] = contourf(ERH - EMS,-4000:1000:5000,'-','LineWidth',1,'LabelColor','k','LabelSpacing',300);
 clabel(M1,RH,'FontSize',0.9*16,'Interpreter','latex')
-% plot(find(ismember(3.*vstds,vmeans)), find(ismember(vmeans,3.*vstds)), 'Color',myorange, 'LineWidth',2, 'LineStyle',':')
 set(gca,'YDir','normal')
 ylabel('$\mu_v$','Rotation',0);
 xlabel('$\sigma_v$')
@@ -131,7 +129,6 @@ xticklabels(vstds(1:round(Nvv/6):Nvv))
 xtickangle(0)
 ylim([1 find(vmeans>=110,1,'first')])
 xlim([1 find(vstds>=30,1,'first')])
-% title('$E[C_{MS}(v)] - E[C_{RH}(v)]$');
 title('Expected MS benefit')
 
 saveas(f1,'./images/F4C_uncertain_v_expcost.png')
@@ -146,7 +143,6 @@ colormap(BGEcolormap(5:end,:))
 
 [M1,RH] = contourf(RH90th - MS90th,-4000:1000:5000,'-','LineWidth',1,'LabelColor','k','LabelSpacing',300);
 clabel(M1,RH,'FontSize',0.9*16,'Interpreter','latex')
-% plot(find(ismember(3.*vstds,vmeans)), find(ismember(vmeans,3.*vstds)), 'Color',myorange, 'LineWidth',2, 'LineStyle',':')
 set(gca,'YDir','normal')
 ylabel('$\mu_v$','Rotation',0);
 xlabel('$\sigma_v$')
@@ -157,61 +153,6 @@ xticklabels(vstds(1:round(Nvv/6):Nvv))
 xtickangle(0)
 ylim([1 find(vmeans>=110,1,'first')])
 xlim([1 find(vstds>=30,1,'first')])
-% title('$E[C_{MS}(v)] - E[C_{RH}(v)]$');
 title('MS benefit at 90th percentile')
 
 saveas(f2,'./images/F4D_decisionbounds.png')
-
-
-%% For each quantile, find the decision boundary
-dec_boundary = zeros(Nq,Nvv_quants);
-
-for q = 1:Nq
-
-    Cdiff_quantile = reshape(MSquants(q,:,:) - RHquants(q,:,:),Nvm,Nvv_quants);
-
-    for vv = 1:Nvv_quants
-    
-        % check whether the boundary exists
-        bound_idx = find(Cdiff_quantile(:,vv)>=0,1,'first');
-    
-        if isempty(bound_idx)
-            bound_idx = Nvm;
-        end
-    
-        dec_boundary(q,vv) = vmeans(bound_idx);
-    end
-end
-
-% plotting
-f3 = figure(3);
-f3.Position = [1400 1000 500 400];
-set(gca,'InnerPosition',[0.15 0.125 0.75 0.75])
-hold all
-
-markers = {'o','s','D','^','pentagram'};
-quantcols = [252,146,114; 251,106,74; 239,59,44; 203,24,29; 153,0,13]./255;
-
-for q = 1:Nq
-    plot(vstds_quantiles, dec_boundary(q,:), 'k-', 'LineWidth', 2, 'Marker',markers{q}, ...
-         'MarkerFaceColor',quantcols(q,:), 'MarkerSize',10, 'DisplayName',['$q = ',' ',num2str(myquantiles(q)),'$'])
-end
-
-legend('FontSize',13,'Location','southeast','AutoUpdate','off','NumColumns',2)
-patch([0 0 11 11],[25 35 35 25],myblue,'FaceAlpha',0.8,'Edgecolor','none')
-patch([0 0 11 11],[110 120 120 110],mygreen,'FaceAlpha',0.8,'Edgecolor','none')
-text(1,30,'MS optimal','FontSize',16)
-text(1,115,'RH optimal','FontSize',16)
-set(gca,'InnerPosition',[0.175 0.15 0.75 0.75])
-set(gca,'YDir','normal')
-ylabel('$\mu_v$','Rotation',0)
-xlabel('$\sigma_v$')
-yticks(vmeans(1:round(Nvm/10):Nvm))
-xticks(vstds(1:round(Nvv/10):Nvv))
-xtickangle(0)
-ylim([min(vmeans) 130])
-xlim([min(vstds) 30])
-title('Decision boundaries');
-grid on
-
-% saveas(f2,'./images/F4D_decisionbounds.png')

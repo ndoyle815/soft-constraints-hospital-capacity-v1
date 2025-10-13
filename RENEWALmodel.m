@@ -6,6 +6,7 @@ function [out] = RENEWALmodel(Rvals,tvals,w,I0,maxtime,Rtype,para)
 % I0:      Initial cases
 % maxtime: Simulation end time
 % Rtype:   Set to 'Case' if computing the case reproduction number
+% para:     Model parameters
 
 % temporary maxtime to avoid R depletion towards simulation end
 xtend = 15;

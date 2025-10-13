@@ -1,5 +1,4 @@
-% script to simulate an outbreak using the renewel equation transmission
-% model
+% script to simulate and produce Figure 3 in manuscript
 clear; close all
 
 % Plotting preferences
@@ -25,7 +24,7 @@ para = load('./mats/Parameters.mat');
 % 3: Fig S11 (alpha_1 = 5 alpha_0)
 % 4: Fig S12 (alpha_1 = 2 alpha_0)
 % 5: Fig S14 (with vs without discounting)
-sensitivity_analysis = 5;
+sensitivity_analysis = 0;
 
 alpha0s = [0.2 0.5];
 alpha1s = [para.alpha(1)*5 para.alpha(1)*2];
@@ -82,24 +81,6 @@ w = discretise_distribution(1:maxtime,'Gamma',mu,sig);
 [outRH] = RENEWALmodel(Ri1,ti1,w,I0,maxtime,Rtype,para);
 [outMS] = RENEWALmodel(Ri2,ti2,w,I0,maxtime,Rtype,para);
 
-
-% schematic for presentation
-Ri3 = [3.02 0.5:0.035:0.85 1 0.7];
-ti3 = [1 40:50 51 230];
-[out3] = RENEWALmodel(Ri3,ti3,w,I0,maxtime,Rtype,para);
-
-f6 = figure(6);
-f6.Position = [100 100 600 300];
-set(gca,'InnerPosition',[0.1 0.2 0.85 0.69])
-hold all
-% patch([0 0 maxtime maxtime], [0 para.eta para.eta 0].*para.Ibar, 'k', 'FaceAlpha',0.4, 'EdgeColor','none', 'DisplayName','Background occupancy')
-plot(out3.t, out3.in_ICU - para.eta*para.Ibar,'Color',myred)
-yline(1.01*max(out3.in_ICU - para.eta*para.Ibar),'k--','Total beds','Interpreter','latex','LineWidth',2,'FontSize',16,'LabelVerticalAlignment','bottom','LabelHorizontalAlignment','right','Layer','bottom')
-xlabel('Time $t$')
-title('In ICU');
-axis([0 min([350 maxtime]) 0 1.1*max(out3.in_ICU - para.eta*para.Ibar)])
-grid on
-saveas(f6,'./runninghotex.png')
 
 %% ICU PLOTTING AND COST EVALUATION
 
@@ -188,7 +169,6 @@ xticks(0:50:200)
 if figwidth > 1250
     legend(stratnames,'Location','northeast','AutoUpdate','off','FontSize',16)
 end
-% title(['$\alpha_0 = ', num2str(para.alpha(1)), ', \alpha_1 = 1$'])
 if sensitivity_analysis == 0
     ylim([8e3 15e3])
     yticks(0:3e3:15e3)
@@ -263,66 +243,3 @@ elseif sensitivity_analysis == 0
     save('./mats/results.mat',"outRH","outMS","vs","Nvs","RH_softcosts","MS_softcosts","inc_or_prev","stratnames",'-mat')
 
 end
-
-
-
-%% Plot regret
-
-% Regretcost = zeros(Nvs);
-% 
-% % RH_Inferredcost = repmat(RH_softcosts,Nvs,1);
-% % RH_Truecost = repmat(RH_softcosts',1,Nvs);
-% % MS_Inferredcost = repmat(MS_softcosts,Nvs,1);
-% % MS_Truecost = repmat(MS_softcosts,Nvs,1);
-% 
-% % [inferred, actual] = deal(zeros(Nvs));
-% 
-% for i = 1:Nvs
-%     for j = 1:Nvs
-%         % what do we infer?
-%         inferred = RH_softcosts(i) - MS_softcosts(i);
-%         actual = RH_softcosts(j) - MS_softcosts(j);
-%         % if inferred > 0 and actual > 0: we made the right decision (MS optimal). No regret
-%         % if inferred > 0 and actual < 0: we made the wrong decision (RH
-%         % actually optimal). Regret is difference (add absolute values)
-%         % if inferred < 0 and actual > 0: we made the wrong decision (MS
-%         % actually optimal). Regret is difference (add absolute values)
-%         % if inferred < 0 and actual < 0: we made the right decision (RH optimal). No regret
-%         if ~isequal(sign(inferred),sign(actual))
-%             Regretcost(i,j) = actual;
-%         end
-%     end
-% end
-% 
-% vmarks = 1:round(Nvs/5):Nvs;
-% contvec = horzcat(-6000:1000:-2000, -1500:500:1500, 2000:1000:6000);
-% % contvec = horzcat(0:500:1000, 2000:1000:6000);
-% decision_boundary = find(RH_softcosts>MS_softcosts,1,"last");
-% arr = 1:13:110;
-% 
-% mycolormap = BGcolormap(horzcat(arr, fliplr(repmat(258,1,length(arr)) - arr)),:);
-% 
-% f5 = figure(5);
-% f5.Position = [800 1000 500 400];
-% set(gca,'InnerPosition',[0.15 0.125 0.75 0.75])
-% hold all
-% 
-% colormap(BGcolormap)
-% [cont1,cont2] = contourf(Regretcost,contvec,'-','LineWidth',1,'LabelColor','k','LabelSpacing',50);
-% clabel(cont1,cont2,'FontSize',0.9*16,'Interpreter','latex')
-% % imagesc(Regretcost)
-% patch([0 0 decision_boundary decision_boundary], [0 decision_boundary decision_boundary 0], 'k', 'EdgeColor', 'none', 'FaceAlpha', 0.3)
-% patch([decision_boundary decision_boundary Nvs Nvs], [decision_boundary  Nvs Nvs decision_boundary], 'k', 'EdgeColor', 'none', 'FaceAlpha', 0.3)
-% xline(decision_boundary, 'r-', '$v_c$','LineWidth',2,'Interpreter','latex','FontSize',16)
-% yline(decision_boundary, 'r-', '$v_c$','LineWidth',2,'Interpreter','latex','FontSize',16)
-% set(gca,'YDir','Normal')
-% clim([-6000 6000])
-% xlabel('Inferred $v$')
-% ylabel('True $v$')
-% xticks(vmarks)
-% yticks(vmarks)
-% xticklabels(vs(vmarks))
-% yticklabels(vs(vmarks))
-% title('Regret')
-% 
-% colorbar(gca)

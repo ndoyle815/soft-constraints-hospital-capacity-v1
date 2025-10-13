@@ -1,5 +1,4 @@
-% script to test whether the two constraints lead to a different decision
-% on the "Lockdown" vs "No Lockdown" question
+% script to to simulate and produce Figures 4A,B in manuscript
 clear; close all
 
 % Plotting preferences
@@ -59,47 +58,6 @@ RHs     = sum(compute_cost(outRH,para,whichconstr,vsamples,inc_or_prev,apply_dis
 
 MS_mu_v = sum(compute_cost(outMS,para,whichconstr,mu_v,inc_or_prev,apply_discounting),2);
 MSs     = sum(compute_cost(outMS,para,whichconstr,vsamples,inc_or_prev,apply_discounting),2);
-
-% plotting
-f1 = figure(1);
-f1.Position = [200 1000 600 200];
-
-plot(vs,vdist,'r')
-xlabel('$v$');
-% xl.Position(2) = xl.Position(2) + 0.1;
-ylabel('Probability')
-title(['$v \sim \mathcal{N}(\mu_v = ',num2str(mu_v),', \sigma_v = ',num2str(sigma_v),')$'])
-xlim([0 max(vs)])
-grid on
-
-%% 
-
-f2 = figure(2);
-f2.Position = [800 600 900 600];
-
-subplot(2,1,1)
-histogram(RHs,'FaceColor',mygreen)
-xline(RH_mu_v,'r','LineWidth',3)
-xlabel('Cost $C_{\mathcal{S}_1}(v)$')
-ylabel('Frequency')
-xlim([min([RHs; MSs]) max([RHs; MSs])])
-legend(stratnames{1},'Location','north')
-title(['$v \sim \mathcal{N}(\mu_v = ',num2str(mu_v),', \sigma_v = ',num2str(sigma_v),')$'])
-grid on
-
-subplot(2,1,2)
-histogram(MSs,'FaceColor',myblue)
-xline(MS_mu_v,'r','LineWidth',3)
-xlabel('Cost $C_{\mathcal{S}_2}(v)$')
-ylabel('Frequency')
-%xlim([min([RHs; MSs]) max([RHs; MSs])])
-legend(stratnames{2},'Location','north')
-grid on
-
-% if mu_v == 50
-%     saveas(f1,'./images/vdist.png')
-%     saveas(f2,'./images/cost_distribution.png')
-% end
 
 %% Sample and plot cost distributions in a loop for different sigma
 
@@ -181,24 +139,3 @@ else
     saveas(f3,['./images/supplement/FS5_v_dists_mu', num2str(mu_v), '.png'])
     saveas(f4,['./images/supplement/FS5_cost_dists_mu', num2str(mu_v), '.png'])
 end
-
-%% Plot big one for presentation
-
-% set(0,'defaultaxesfontsize',24)
-% 
-% f6 = figure(6);
-% f6.Position = [200 200 500 500];
-% 
-% cd Violinplot-Matlab-master/
-% violinplot([RHs MSs], {'RH','MS'}, 'ViolinColor', [mygreen; myblue], 'ShowMean', true);
-% axis([0.6 2.4 8e3 14e3])
-% xticks([1 2])
-% ax = gca;
-% ax.YAxis.Exponent = 0;
-% % yl = ylabel('Cost $C_{\mathcal{S}}(v)$');
-% % yl.Position(1) = yl.Position(1) - 0.15;
-% xlabel('Control Strategy')
-% title(['Cost distribution'])
-% cd ..
-% 
-% saveas(f6,'~/Pictures/test.png')
