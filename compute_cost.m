@@ -1,4 +1,4 @@
-function C = compute_cost(sim,para,whichconstr,v,inc_or_prev,indirect)
+function C = compute_cost(sim,para,whichconstr,v,inc_or_prev,apply_discounting)
 
 % function to compute the cost of a model simulation using either constraint 
 % INPUTS:
@@ -19,13 +19,12 @@ nts = length(survival_dist);
 
 % background capacity (num patients in care without disease)
 capacity = para.Ibar;
-background = para.eta*para.Ibar;
 
 % apply the hard or soft constraint
 if isequal(whichconstr,'hard')
     
     % find where capacity is exceeded
-    idxs_over_capacity = find(sim.in_ICU + background >= capacity);
+    idxs_over_capacity = find(sim.in_ICU >= capacity);
 
     if inc_or_prev == 1
 
@@ -54,11 +53,11 @@ if isequal(whichconstr,'hard')
     
     end
 
-    % append indirect costs
-    if indirect
-        Cindirect = max(0, min( sim.in_ICU+background-capacity, background ) );
-        C = C + Cindirect;
-    end
+    % % append indirect costs
+    % if indirect
+    %     Cindirect = max(0, min( sim.in_ICU+background-capacity, background ) );
+    %     C = C + Cindirect;
+    % end
 
 elseif isequal(whichconstr,'soft')
 
@@ -71,7 +70,7 @@ elseif isequal(whichconstr,'soft')
     if inc_or_prev == 1
     
         % scaling of cost per new infection in time - logistic function
-        alpha_t = para.alpha(1) + (para.alpha(2) - para.alpha(1))./(1 + exp(-v.*((sim.in_ICU + background)./capacity - 1)));
+        alpha_t = para.alpha(1) + (para.alpha(2) - para.alpha(1))./(1 + exp(-v.*(sim.in_ICU./capacity - 1)));
         C = alpha_t.*sim.new_ICU;
     
     elseif inc_or_prev == 0
@@ -88,7 +87,7 @@ elseif isequal(whichconstr,'soft')
         for deltat = 1:length(sim.new_ICU)
             dt_lengthofstay = deltat+1:deltat+1+nts-1;
 
-            alpha_t = para.alpha(1).*ones(length(v),nts) + (para.alpha(2)-para.alpha(1))./(1 + exp(-v.*((Prev(dt_lengthofstay)+background)./capacity - 1)));
+            alpha_t = para.alpha(1).*ones(length(v),nts) + (para.alpha(2)-para.alpha(1))./(1 + exp(-v.*(Prev(dt_lengthofstay)./capacity - 1)));
             dC_vec = survival_dist.*alpha_t;
             C(:,dt_lengthofstay) = C(:,dt_lengthofstay) + dC_vec;
         end
@@ -105,7 +104,7 @@ elseif isequal(whichconstr,'soft')
         Inc = [zeros(1,nts) sim.new_ICU];
 
         % time-dependent cost as a function of occupancy alpha_t
-        alpha_t = para.alpha(1).*ones(length(v),length(Prev)) + (para.alpha(2)-para.alpha(1))./(1 + exp(-v.*((Prev+background)./capacity - 1)));
+        alpha_t = para.alpha(1).*ones(length(v),length(Prev)) + (para.alpha(2)-para.alpha(1))./(1 + exp(-v.*(Prev./capacity - 1)));
 
         % generate incidence matrix
         IncMat = zeros(T,nts); for j=1:T; IncMat(j,:) = Inc(j:j+nts-1); end
@@ -117,13 +116,13 @@ elseif isequal(whichconstr,'soft')
 
     end
 
-    % append indirect costs
-    if indirect
-        logfunc = 1./(1 + exp(-v.*((sim.in_ICU+background)./capacity - 1)));
-        %Cindirect = max( 0, min( (sim.in_ICU+background-capacity).*logfunc, background ) );
-        Cindirect = max( 0, min( (sim.in_ICU+background-capacity), background ) );
-        C = C + Cindirect;
-    end
+    % % append indirect costs
+    % if indirect
+    %     logfunc = 1./(1 + exp(-v.*((sim.in_ICU+background)./capacity - 1)));
+    %     %Cindirect = max( 0, min( (sim.in_ICU+background-capacity).*logfunc, background ) );
+    %     Cindirect = max( 0, min( (sim.in_ICU+background-capacity), background ) );
+    %     C = C + Cindirect;
+    % end
 
 else
 
@@ -132,3 +131,9 @@ else
 
 end
 
+% apply discounting
+if apply_discounting
+    d = 0.015;
+    discounting = 1./(1 + d).^((1:T)./365);
+    C = C.*discounting;
+end

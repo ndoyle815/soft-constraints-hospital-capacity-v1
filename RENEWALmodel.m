@@ -98,6 +98,10 @@ for T = 1:length(alltimes)
     new_Deaths(T+LL) = new_Deaths(T+LL) + para.Dist_HM*(new_Hosp(T).*(para.ma)');
 end
 
+% add background occupancy
+in_Hosp = in_Hosp + para.Hosp_background;
+in_ICU = in_ICU + para.ICU_background;
+
 new_Hosp(length(alltimes)+1:end)=[];
 in_Hosp(length(alltimes)+1:end)=[];
 new_ICU(length(alltimes)+1:end)=[];
@@ -105,4 +109,5 @@ in_ICU(length(alltimes)+1:end)=[];
 new_Deaths(length(alltimes)+1:end)=[];
 
 % save outputs as a structure
-out = struct('Its',Its, 'ExpIts',ExpIts, 'R',R, 't',alltimes, 'new_Hosp',new_Hosp, 'new_ICU',new_ICU, 'in_Hosp',in_Hosp, 'in_ICU',in_ICU, 'new_Deaths',new_Deaths);
+out = struct('Its',Its, 'ExpIts',ExpIts, 'R',R, 't',alltimes, 'tchange',tvals, 'Rchange',Rvals, ...
+    'new_Hosp',new_Hosp, 'new_ICU',new_ICU, 'in_Hosp',in_Hosp, 'in_ICU',in_ICU, 'new_Deaths',new_Deaths);

@@ -32,11 +32,15 @@ ma
 dt
 
 % hospital capacity
-eta  = 0.468;    % background occupancy rate
-Ibar = 2627/(1 - eta); % total beds (no. available to treat is (1-eta)Ibar)
-
-alpha = [0.3456 1];        % relative cost of cases above capacity compared to below capacity (hard capacity)
-%alpha = [1 1000];
+% these are derived from in ../region_ICU/get_region_dists.m
+eta  = 0.468;             % background ICU occupancy rate
+Ibar = 2627/(1 - eta);    % total ICU beds (no. available to treat is (1-eta)Ibar)
+etaH = 0.4597;            % background G&A occupancy rate
+Hbar = 62271/(1 - etaH);  % total G&A beds (no. available to treat is (1-eta)Hbar)
+Hosp_background = etaH*Hbar;
+ICU_background = eta*Ibar;
+% alpha = [0.3456 1];        % relative cost of cases above capacity compared to below capacity (hard capacity)
+alpha = [0.3 1];
 
 % % model parameters
 % R0 = 2.0;         % basic reproduction number
@@ -50,7 +54,8 @@ alpha = [0.3456 1];        % relative cost of cases above capacity compared to b
 % dt = 0.1;         % time step
 % maxtime = 365;    % end time
 
-save("./mats/Parameters.mat","Dist_HM","Dist_SC","Dist_SH","Time_C","Time_H","Time_HC","ca","ha","ma","dt","eta","Ibar","alpha",'-mat')
+save("./mats/Parameters.mat","Dist_HM","Dist_SC","Dist_SH","Time_C","Time_H","Time_HC","ca","ha","ma","dt",...
+     "eta","Ibar","etaH","Hbar","Hosp_background","ICU_background","alpha",'-mat')
 
 % define colours and colourmaps for plotting
 % colours
