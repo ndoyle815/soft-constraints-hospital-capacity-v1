@@ -25,24 +25,27 @@ alpha_hard(ICU>=para.Ibar) = para.alpha(2);
 % PLOT ALPHA LOGISTIC FUNCTION
 vvec = [1.5 2 3 5 10].*1e1;
 
+pct = 100;
+
 f1 = figure(1);
 f1.Position = [400 1200 1000 300];
 set(gca,'InnerPosition',[0.075 0.2 0.9 0.7])
 hold all
-patch([0 0 para.eta para.eta], [0 2*para.alpha(2) 2*para.alpha(2) 0], 'k', 'FaceAlpha',0.4, 'EdgeColor','none', 'DisplayName','Non-disease patients')
+patch([0 0 pct.*para.eta 100.*para.eta], [0 2*para.alpha(2) 2*para.alpha(2) 0], 'k', 'FaceAlpha',0.4, 'EdgeColor','none', 'DisplayName','Non-disease patients')
 for v = 1:length(vvec)
     alpha_logistic = para.alpha(1) + (para.alpha(2)-para.alpha(1))./(1 + exp(-vvec(v).*(ICU./para.Ibar - 1)));
     dispname = ['Soft $\alpha$, $v = ', ' ', num2str(vvec(v)), '$'];
-    plot(ICU./para.Ibar,alpha_logistic,'Color',vcols(v,:),'DisplayName',dispname)
+    plot(pct.*ICU./para.Ibar,alpha_logistic,'Color',vcols(v,:),'DisplayName',dispname)
 end
-plot(ICU./para.Ibar,alpha_hard,'Color',myred,'DisplayName','Hard $\alpha$')
-axis([0 1.5 0 1.2*para.alpha(2)])
-legend('Location','west','AutoUpdate','off','FontSize',16)
-x1 = xline(para.Ibar./para.Ibar,'k--','','Interpreter','latex','FontSize',16,'LabelOrientation','horizontal','LabelVerticalAlignment','top','LabelHorizontalAlignment','left','LineWidth',2,'Layer','bottom');
+plot(pct.*ICU./para.Ibar,alpha_hard,'Color',myred,'DisplayName','Hard $\alpha$')
+axis([0 pct.*1.4 0 1.2*para.alpha(2)])
+legend('Location','west','AutoUpdate','off','FontSize',14)
+x1 = xline(pct.*para.Ibar./para.Ibar,'k:','','Interpreter','latex','FontSize',16,'LabelOrientation','horizontal','LabelVerticalAlignment','top','LabelHorizontalAlignment','left','LineWidth',2,'Layer','bottom');
 y1 = yline(para.alpha(1),'k--','$\alpha_0$','Interpreter','latex','FontSize',16,'LabelHorizontalAlignment','right','LineWidth',2,'Layer','bottom');
 y2 = yline(para.alpha(2),'k--','$\alpha_1$','Interpreter','latex','FontSize',16,'LabelHorizontalAlignment','right','LineWidth',2,'Layer','bottom');
-xticks(0:0.1:1.5)
-xlabel('Occupancy rate $\textrm{ICU}^o(t) / \textrm{ICU}_c$')
+xticks(pct.*(0:0.1:1.4))
+xlabel('ICU Occupancy rate $(\%)$')
+ylabel('Daily cost $\alpha(t)$')
 title('Daily cost per patient $\alpha(t)$')
 grid on
 
