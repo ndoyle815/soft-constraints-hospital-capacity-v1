@@ -6,5 +6,5 @@ All code written in MATLAB, compatible with version R2024a.
 Order to run for reproducibility:
 
 1. define_params.m to save variables for simulating model
-2. Figure scripts in order 1-5
+2. Figure scripts in order Fig1, Fig2, Fig3, Fig4AB, Fig4CD, FigS1, FigS5
 3. Supplementary analyses reproduced by modifying the highlighted sections in Figure scripts
