@@ -1,5 +1,6 @@
 # Modelling healthcare capacity constraints
-[![DOI](https://zenodo.org/)](https://doi.org/10.5281/zenodo.20608525)
+
+[![DOI](https://zenodo.org//badge/DOI/10.5281/zenodo.20608525.svg)](https://doi.org/10.5281/zenodo.20608525)
 
 Code for reproducing the results presented in 'The case for using flexible healthcare capacity constraints to optimise pandemic control strategies' (N.J. Doyle, F. Cumming, T.J.R. Finnie, M. West, R.N. Thompson, M.J. Tildesley).
 
