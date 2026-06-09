@@ -1,0 +1,8 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Doyle
+  given-names: Nathan J.
+title:ndoyle815/soft-constraints-hospital-capacity-v1: Source code for "The case for using flexible healthcare capacity constraints to optimise pandemic control strategies" (Version v1.0.0)
+version: v1.0.0
+date-released: 2026-06-09
